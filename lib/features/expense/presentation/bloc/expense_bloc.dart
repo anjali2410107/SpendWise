@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:spendwise/features/expense/domain/repositories/expense_repository.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_event.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_state.dart';
-
 import '../../domain/entities/expense.dart';
 
 class ExpenseBloc extends Bloc<ExpenseEvent,ExpensesState>
@@ -29,6 +28,18 @@ class ExpenseBloc extends Bloc<ExpenseEvent,ExpensesState>
         expenses:event.expenses,
         isLoading:false,
       ));
+    });
+    on<AddExpense>((event,emit)async
+    {
+      await repository.addExpense(event.expense, event.userId);
+    });
+    on<DeleteExpense>((event,emit) async
+    {
+      await repository.deleteExpense(event.expenseId, event.userId);
+    });
+    on<UpdateExpense>((event,emit) async
+    {
+      await repository.updateExpense(event.expense, event.userId);
     });
   }
   @override
