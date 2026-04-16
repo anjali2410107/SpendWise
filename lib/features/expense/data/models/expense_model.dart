@@ -13,7 +13,7 @@ factory ExpenseModel.fromJson(Map<String,dynamic> json)
   return ExpenseModel(
       id: json['id'],
       title: json['title'],
-      amount: json['amount'],
+      amount: (json['amount'] as num).toDouble(),
       category: json['category'],
       date: DateTime.parse(json['date']),
   );
@@ -27,7 +27,4 @@ Map<String,dynamic> toJson()
         'amount':amount,
         'category':category,
         'date':date.toIso8601String(),
-      };
-}
-
-}
+      };}}
