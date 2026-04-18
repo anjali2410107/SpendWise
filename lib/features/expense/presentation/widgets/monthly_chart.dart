@@ -7,42 +7,30 @@ class MonthlyChart extends StatelessWidget{
   Widget build(BuildContext context)
   {
     final entries=data.entries.toList();
+    final total=entries.fold<double>(0,(sum,item)=>sum+item.value,);
     return SizedBox(
       height: 250,
-      child: BarChart(
-        BarChartData(
-          alignment: BarChartAlignment.spaceAround,
-          borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: true),
-            ),
-              bottomTitles:AxisTitles(
-                sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (value,meta)
-                      {
-                        if(value.toInt() >=entries.length)
-                          return const SizedBox();
-                        return Text(entries[value.toInt()].key);
-                      },
-                  ),
-                ),
+      child: PieChart(
+        PieChartData(
+          sectionsSpace: 2,
+          centerSpaceRadius: 60,
+          sections: List.generate(entries.length, (index) {
+            final e = entries[index];
+            final percentage = total == 0
+                ? 0
+                : (e.value / total) * 100;
+            return PieChartSectionData(
+              value: e.value,
+              title: "${percentage.toStringAsFixed(1)}%",
+              radius: 60,
+              titleStyle: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
-              barGroups:List.generate(entries.length, (index)
-                {
-                  final amount=entries[index].value;
-                  return BarChartGroupData(
-                  x:index,
-                  barRods:[
-                    BarChartRodData(
-                    toY:amount,
-                    width:16,
-                borderRadius:BorderRadius.circular(4),
-                    ),
-                ],
-                  );
-                }),
+            );
+          }),
+
           ),
       ),
     );
