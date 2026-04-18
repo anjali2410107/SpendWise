@@ -34,8 +34,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent,ExpensesState>
       await repository.addExpense(event.expense, event.userId);
     });
     on<DeleteExpense>((event,emit) async
-    {
+    {  print("Delete event triggered: ${event.expenseId}");
       await repository.deleteExpense(event.expenseId, event.userId);
+    print("Deleted from repo");
     });
     on<UpdateExpense>((event,emit) async
     {

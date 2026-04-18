@@ -11,8 +11,7 @@ class ExpenseRemoteDataSource
         .collection('users')
         .doc(userId)
         .collection('expenses')
-        .doc(expense.id)
-        .set(expense.toJson());
+        .add(expense.toJson());
   }
   Stream<List<ExpenseModel>> getExpenses(String userId)
   {
@@ -23,16 +22,20 @@ class ExpenseRemoteDataSource
         .snapshots()
         .map((snapshot)
     {
-      return snapshot.docs
-      .map((doc)=>ExpenseModel.fromJson(doc.data()))
+      return snapshot.docs.map((doc)
+      {
+      return ExpenseModel.fromJson({
+        ...doc.data(),
+        'id': doc.id,
+      });})
       .toList();
     }
     );
   }
 
   Future<void> deleteExpense(String expenseId,String userId) async
-  {
-    await firestore
+  {  print("Deleting from Firestore: $expenseId");
+  await firestore
         .collection('users')
         .doc(userId)
         .collection('expenses')
@@ -40,8 +43,9 @@ class ExpenseRemoteDataSource
         .delete();
   }
   Future<void> updateExpense(ExpenseModel expense,String userId) async
-  {
-    await firestore
+  {  print("Updating Firestore ID: ${expense.id}");
+
+  await firestore
         .collection('users')
         .doc(userId)
         .collection('expenses')

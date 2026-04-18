@@ -13,4 +13,19 @@ class Expense
     required this.category,
     required this.date,
 });
+  Expense copyWith({
+    String? title,
+    double? amount,
+    String? category,
+    DateTime? date,
+})
+  {
+    return Expense(
+      id:id,
+      title: title?? this.title,
+        amount: amount?? this.amount,
+      category: category?? this.category,
+      date: date?? this.date,
+    );
+  }
 }

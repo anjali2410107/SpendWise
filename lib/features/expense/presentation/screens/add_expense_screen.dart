@@ -30,7 +30,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen>
       return;
     }
     final expense=Expense(
-        id: ' ',
+        id: '',
         title: title,
         amount: amount,
         category: category,

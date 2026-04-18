@@ -1,15 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:spendwise/features/expense/domain/entities/expense.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_bloc.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_event.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_state.dart';
 
-class DashboardScreen extends StatelessWidget{
+class DashboardScreen extends StatefulWidget {
   final String userId;
-  const DashboardScreen({super.key,required this.userId});
+
+  const DashboardScreen({super.key, required this.userId});
+
   @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+class _DashboardScreenState extends State<DashboardScreen>
+{
+  @override
+  void initState()
+  {
+    super.initState();
+    context.read<ExpenseBloc>().add(
+      LoadExpenses(widget.userId),
+    );
+  }
   Widget build(BuildContext context)
   {
     return Scaffold(
@@ -36,9 +51,9 @@ class DashboardScreen extends StatelessWidget{
           ),
         );
       }),
-      floatingActionButton: FloatingActionButton(onPressed: ()
-      {
-
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+      context.push('/add');
       },
         child: const Icon(Icons.add),
       ),
@@ -54,23 +69,46 @@ class DashboardScreen extends StatelessWidget{
         itemBuilder: (context,index)
         {
         final expense=expenses[index];
-        return Dismissible(key: Key(expense.id),
+        return 
+          Dismissible(key: Key(expense.id),
             direction: DismissDirection.endToStart,
+              confirmDismiss: (direction) async
+              {print("Deleting ID from UI: ${expense.id}");
+              final shouldDelete=await showDialog(
+                  context: context, 
+                  builder: (context)
+                  {
+                    return AlertDialog(
+
+                      title: const Text("Delete Expense"),
+                      content: const Text("Are you sure?"),
+                      actions: [
+                        TextButton(onPressed: ()  =>Navigator.pop(context,true),
+                            child: const Text("Delete"),
+                        ),
+
+                      ],
+                    );
+                  },
+              );
+            if(shouldDelete==true)
+{
+  context.read<ExpenseBloc>().add(
+DeleteExpense(expense.id,widget.userId),
+);
+}
+  return shouldDelete;
+            },
             background: Container(
               color: Colors.red,
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: const Icon(Icons.delete,color:Colors.white),
+              child: const Icon(Icons.delete,color: Colors.white),
             ),
-            onDismissed: (direction)
-            {
-              context.read<ExpenseBloc>().add(DeleteExpense(expense.id,
-                  userId),
-              );
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Expense deleted")),
-            );
-              },
-    child:  ListTile(
+              child: ListTile(
+                onTap: (){
+                  context.push('/edit',extra:expense);
+                },
         title:Text(expense.title),
     subtitle:Text(expense.category),
     trailing:Text("₹${expense.amount}"),
@@ -115,7 +153,6 @@ class DashboardScreen extends StatelessWidget{
             style: const TextStyle(fontSize: 24,
             fontWeight: FontWeight.bold),
             ),
-
         ],
       ),
       ),

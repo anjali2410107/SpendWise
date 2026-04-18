@@ -8,7 +8,8 @@ import 'package:spendwise/features/expense/presentation/bloc/expense_bloc.dart';
 import 'package:spendwise/router/app_router.dart';
 import 'firebase_options.dart';
 
-void main() async {
+void main() async
+{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -16,9 +17,9 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget
+{
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     const userId="demoUser";
