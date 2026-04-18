@@ -6,6 +6,7 @@ import 'package:spendwise/features/expense/domain/entities/expense.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_bloc.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_event.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_state.dart';
+import 'package:spendwise/features/expense/presentation/widgets/monthly_chart.dart';
 
 class DashboardScreen extends StatefulWidget {
   final String userId;
@@ -30,9 +31,9 @@ class _DashboardScreenState extends State<DashboardScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text("SpendWise"),
+
       ),
-      body: BlocBuilder
-          <ExpenseBloc,ExpensesState>
+      body: BlocBuilder<ExpenseBloc,ExpensesState>
         (
           builder: (context,state)
       {
@@ -45,8 +46,11 @@ class _DashboardScreenState extends State<DashboardScreen>
           child: Column(
             children: [
               _buildTotalCard(expenses),
+              const  SizedBox(height: 20,),
+MonthlyChart(data: state.monthlyTotals),
               _buildCategorySection(expenses),
               _buildRecentList(expenses),
+
             ],
           ),
         );

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:spendwise/features/expense/domain/entities/expense.dart';
 
 abstract class ExpenseEvent {}
@@ -23,4 +24,8 @@ class UpdateExpense extends ExpenseEvent
   final Expense expense;
   final String userId;
   UpdateExpense(this.expense,this.userId);
+}
+class FilterByCategory extends ExpenseEvent{
+  final String category;
+  FilterByCategory(this.category);
 }
