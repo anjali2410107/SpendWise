@@ -6,18 +6,22 @@ import 'package:spendwise/features/expense/presentation/screens/splash_screen.da
 import 'package:spendwise/main_shell.dart';
 
 import '../features/expense/domain/entities/expense.dart';
+import '../features/expense/presentation/screens/login_screen.dart';
+import '../features/expense/presentation/screens/signup_screen.dart';
 class AppRouter {
   static GoRouter router(String userId) =>
       GoRouter(
     initialLocation: '/',
     routes:[
       GoRoute(path: '/',builder: (context,state) => const SplashScreen()),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(path: '/signup', builder: (context, state) => const SignUpScreen()),
       ShellRoute(builder: (context,state,child)
       {
         return MainShell(child: child);
       },
     routes: [
-      GoRoute(
+       GoRoute(
   path: '/dashboard',
 builder: (context,state) =>
 DashboardScreen(userId: userId),
