@@ -35,10 +35,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<void> _signUp() async {
     try {
       setState(() => _isLoading = true);
+      final name = _nameController.text.trim();
+
+      final userCredential =
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+      await userCredential.user!.updateDisplayName(name);
+      await FirebaseAuth.instance.currentUser!.reload();
       if (mounted) context.go('/dashboard');
     } catch (e) {
       if (mounted) {

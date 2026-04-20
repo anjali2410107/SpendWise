@@ -19,32 +19,39 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+class _MyAppState extends State<MyApp>
+{
+  final _auth=FirebaseAuth.instance;
+   final _dataSource=ExpenseRemoteDataSource(FirebaseFirestore.instance);
+  final _firestore = FirebaseFirestore.instance;
+late  final _authRepository = AuthRepositoryImpl(_auth);
+ late final _repository=ExpenseRepositoryImpl(_dataSource);
   Widget build(BuildContext context) {
-    final firestore = FirebaseFirestore.instance;
-    final firebaseAuth = FirebaseAuth.instance;
-
-    final authRepository = AuthRepositoryImpl(firebaseAuth);
-    final dataSource = ExpenseRemoteDataSource(firestore);
-    final repository = ExpenseRepositoryImpl(dataSource);
-
-    final userId = firebaseAuth.currentUser?.uid ?? '';
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => AuthBloc(authRepository)),
-        BlocProvider(create: (_) => ExpenseBloc(repository)),
+        BlocProvider(create: (_) => AuthBloc(_authRepository)),
+        BlocProvider(create: (_) => ExpenseBloc(_repository)),
       ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'SpendWise',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        routerConfig: AppRouter.router(userId),
+      child:StreamBuilder<User?>
+        (stream: _auth.authStateChanges(),
+          builder: (context,snapshot) {
+            final userId = snapshot.data?.uid ??'';
+            return MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              title: 'SpendWise',
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              ),
+              routerConfig: AppRouter.router(userId),
+            );
+          },
       ),
     );
   }

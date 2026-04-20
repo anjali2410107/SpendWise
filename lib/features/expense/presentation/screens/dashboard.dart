@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spendwise/enum.dart';
 import 'package:spendwise/features/expense/domain/entities/expense.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_bloc.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_event.dart';
@@ -41,14 +42,17 @@ class _DashboardScreenState extends State<DashboardScreen>
           {
             return const Center(child: CircularProgressIndicator(),);
           }
-        final expenses=state.expenses;
+        final expenses=state.filteredExpenses;
         return SingleChildScrollView(
           child: Column(
             children: [
-              _buildTotalCard(expenses),
+              const SizedBox(height: 10,),
+        _buildToggle(state),
+              const SizedBox(height: 20,),
+              _buildDonutCard(expenses,state.monthlyTotals),
               const  SizedBox(height: 20,),
-MonthlyChart(data: state.monthlyTotals),
               _buildCategorySection(expenses),
+              const  SizedBox(height: 20,),
               _buildRecentList(expenses),
 
             ],
@@ -73,13 +77,13 @@ MonthlyChart(data: state.monthlyTotals),
         itemBuilder: (context,index)
         {
         final expense=expenses[index];
-        return 
+        return
           Dismissible(key: Key(expense.id),
             direction: DismissDirection.endToStart,
               confirmDismiss: (direction) async
               {print("Deleting ID from UI: ${expense.id}");
               final shouldDelete=await showDialog(
-                  context: context, 
+                  context: context,
                   builder: (context)
                   {
                     return AlertDialog(
@@ -128,15 +132,46 @@ DeleteExpense(expense.id,widget.userId),
         categoryTotal[e.category]=
             (categoryTotal[e.category]??0)+e.amount;
       }
-    return Column(
-      children: categoryTotal.entries.map((entry)
-      {
-        return ListTile(
-          title: Text(entry.key),
-          trailing: Text("₹${entry.value.toStringAsFixed(2)}"),
-        );
-      }).toList(),
-    );
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child:Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+          const Text("Monthly Breakdown",
+          style:
+          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+      const SizedBox(height: 10),
+      ...categoryTotal.entries.map((entry)
+    {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Colors.blueGrey,
+                borderRadius: BorderRadius.circular(10),
+              ),),
+            const SizedBox(width: 12),
+            Expanded(child: Text(entry.key,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),),
+            Text("₹${entry.value.toStringAsFixed(2)}"),
+
+          ],
+        ),
+
+      );
+    }
+      )],
+    ),);
   }
   Widget _buildTotalCard(List<Expense> expenses)
   {
@@ -162,5 +197,125 @@ DeleteExpense(expense.id,widget.userId),
       ),
     );
   }
+
+ Widget _buildDonutCard(List<Expense> expenses,Map<String,double> data)
+ {
+   double total = expenses.fold(0, (sum, e) => sum + e.amount);
+   double avg = 0;
+   if (expenses.isNotEmpty) {
+     final firstDate = expenses.first.date;
+     final days =
+         DateTime.now().difference(firstDate).inDays + 1;
+     avg = total / days;
+   }
+return Container(
+  margin: const EdgeInsets.symmetric(horizontal: 16),
+  padding: const EdgeInsets.all(20),
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(24),
+  ),
+  child: Column(
+    children: [
+    Stack(
+    alignment: Alignment.center,
+    children: [
+    SizedBox(
+    height: 200,
+    child: MonthlyChart(data: data),
+
+  ),
+  Column(
+    children: [
+      const Text(
+        "TOTAL SPENT",
+        style: TextStyle(
+            fontSize: 12, letterSpacing: 1, color: Colors.grey),
+      ),
+      const SizedBox(height: 5),
+      Text(
+        "₹${total.toStringAsFixed(0)}",
+        style: const TextStyle(
+            fontSize: 26, fontWeight: FontWeight.bold),
+      ),
+    ],
+  )
+]
+  ),
+    const SizedBox(height: 20),
+Row(
+  children: [
+    Expanded(child: _statBox(
+"AVG. DAILY", "₹${avg.toStringAsFixed(2)}"),
+),
+   const SizedBox(width: 10),
+   Expanded(
+   child: _statBox("BUDGET LEFT", "₹1,180"),
+   ),],
+)
+  ],
+));}
+
+    Widget _buildToggle(ExpensesState state)
+  {
+    return Container(
+      margin:  const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(30),
+      ),
+        child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _toggleItem("Weekly",TimeFilter.weekly,state),
+    _toggleItem("Monthly",TimeFilter.monthly,state) ,
+  _toggleItem("Yearly",TimeFilter.yearly,state) ,
+
+  ],
+    ),
+    );
+  }
+  Widget _toggleItem(
+      String text,TimeFilter filter,ExpensesState state)
+  {
+    final isSelected=state.selectedFilter==filter;
+    return GestureDetector(
+      onTap: (){
+        context.read<ExpenseBloc>().add
+          (
+          ChangeTimeFilter(filter),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected?Colors.white:Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(text),
+      ),
+    );
+  }
+  Widget _statBox(String title, String value) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Text(title,
+              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 5),
+          Text(value,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 16)),
+        ],
+      ),
+    );
+  }
+
   }
 

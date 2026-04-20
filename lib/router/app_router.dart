@@ -7,6 +7,7 @@ import 'package:spendwise/main_shell.dart';
 
 import '../features/expense/domain/entities/expense.dart';
 import '../features/expense/presentation/screens/login_screen.dart';
+import '../features/expense/presentation/screens/settings_screen.dart';
 import '../features/expense/presentation/screens/signup_screen.dart';
 class AppRouter {
   static GoRouter router(String userId) =>
@@ -37,6 +38,10 @@ AddExpenseScreen(userId: userId),
         final expense=state.extra as Expense;
         return EditExpenseScreen(expense: expense, userId: userId);
       }
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   ),

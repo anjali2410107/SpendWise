@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:spendwise/features/expense/domain/entities/expense.dart';
 
+import '../../../../enum.dart';
+
 abstract class ExpenseEvent {}
   class LoadExpenses extends ExpenseEvent
   {
@@ -28,4 +30,8 @@ class UpdateExpense extends ExpenseEvent
 class FilterByCategory extends ExpenseEvent{
   final String category;
   FilterByCategory(this.category);
+}
+class ChangeTimeFilter extends ExpenseEvent{
+  final TimeFilter filter;
+  ChangeTimeFilter(this.filter);
 }

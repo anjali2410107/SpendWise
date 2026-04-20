@@ -27,6 +27,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> logout() async {
     await auth.signOut();
+  await GoogleSignIn().signOut();
   }
 
   @override
