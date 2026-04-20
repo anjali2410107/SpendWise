@@ -47,55 +47,136 @@ class _AddExpenseScreenState extends State<AddExpenseScreen>
   Widget build(BuildContext context)
   {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Expense")),
-      body: Padding(
+      backgroundColor: const Color(0xFFF4F6F8),
+      appBar: AppBar(title: const Text("Add Expense"),
+      backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
+      ),
+      body:SingleChildScrollView(
           padding:const EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(
-              labelText: "Title",
-              border: OutlineInputBorder(),
+          const Text("Transaction Amount",style: TextStyle(fontSize: 12,color: Colors.grey),),
+          const SizedBox(height: 10,),
+          Center(
+          child: TextField(
+            controller: _amountController,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
             ),
-          ),
-          const SizedBox(height: 12,),
+            decoration: const InputDecoration(
+              hintText: "0.00",
+              border: InputBorder.none,
+            ),
+          ),),
+          const SizedBox(height: 20,),
+        const Text("TiTLE"),
+        const SizedBox(height: 6,),
         TextField(
-          controller: _amountController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: "Amount",
-            border: OutlineInputBorder(),
+          controller: _titleController,
+          decoration: InputDecoration(
+            hintText: "What was it for?",
+            filled:true,
+            fillColor: Colors.grey.shade200,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         ),
-          const SizedBox(height: 12,),
-          DropdownButtonFormField<String>
-            (
-              value: category,
-              items: ["Food","Travel","Shopping"]
-              .map((e) => DropdownMenuItem(
-                value: e,
-                  child: Text(e),)).toList(),
-              onChanged: (val)
-          {
-            setState(() {
-              category=val!;
-            });
-          },
-            decoration: const InputDecoration(
-              labelText: "Category",
-              border: OutlineInputBorder(),
-            ),
+          const SizedBox(height: 20,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const[
+              Text("Curated Category",style: TextStyle(fontWeight: FontWeight.bold),),
+              Text("SELECT ONE",style: TextStyle(fontSize: 10,color: Colors.green),),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: ["Food","Transport","Retail","Rent","Fun","Health"]
+                .map((cat) =>_categoryBox(cat))
+            .toList(),
+          ),
+          const SizedBox(height: 20,),
+
+          Row(
+            children: [
+              Expanded(child: _infoBox(Icons.calendar_today,"Oct 24,2023"),
+              ),
+              const SizedBox(width: 10,),
+              Expanded(child: _infoBox(Icons.credit_card,"Visa"),
+              ),
+            ],
           ),
           const SizedBox(height: 20,),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(onPressed: _submit,
-                child: const Text("Add Expense"),
+            child: ElevatedButton(
+              onPressed: _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0A3D4D),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text("Save Entry"),
             ),
           ),
         ],
       ),
+      ),
+    );
+  }
+
+  Widget _categoryBox(String cat)
+  {
+    final isSelected=category==cat;
+    return GestureDetector(
+      onTap: ()
+      {
+        setState(() {
+          category=cat;
+               
+        });
+      },
+      child: Container(
+        width: 90,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected?const Color(0xFF0A3D4D):Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Text(cat,style: TextStyle(
+            color: isSelected?Colors.white:Colors.black,
+            fontSize: 12,
+          ),),
+        ),
+      ),
+    );
+  }
+  Widget _infoBox(IconData icon,String text)
+  {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon,size: 18,),
+          const SizedBox(width: 8,),
+          Text(text),
+        ],
       ),
     );
   }

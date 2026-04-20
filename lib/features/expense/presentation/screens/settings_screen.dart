@@ -22,7 +22,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
-        title: const Text("Settings"),
+        title: const Text("Settings",style: TextStyle(color: Color(0xFF0A3D4D),fontWeight: FontWeight.bold),),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
@@ -94,7 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           ),),
         ),
         const SizedBox(height: 10,),
-        Text(name,style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
+        Text(name,style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Color(0xFF0A3D4D)),
         ),
         const SizedBox(height: 4,),
         Text(email,style: const TextStyle(color: Colors.grey),
@@ -121,7 +121,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     _tile(
       icon:Icons.attach_money,
     title:"Currency",
-    trailing:const Text("USD"),
+    trailing:const Text("USD",style: TextStyle(color: Color(0xFF0A3D4D),fontWeight: FontWeight.bold),),
   ),
   _tile(
   icon:Icons.notifications,
