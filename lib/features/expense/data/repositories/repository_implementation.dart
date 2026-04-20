@@ -17,7 +17,9 @@ class ExpenseRepositoryImpl implements ExpenseRepository
         title: expense.title,
         amount: expense.amount,
         category: expense.category,
-        date: expense.date);
+        date: expense.date,
+      paymentMethod: expense.paymentMethod,
+    );
     await remote.addExpense(model, userId);
   }
   @override
@@ -39,7 +41,7 @@ final model=ExpenseModel(
     amount: expense.amount,
     category: expense.category,
     date: expense.date,
-);
+  paymentMethod: expense.paymentMethod,);
 await remote.updateExpense(model, userId);
   }
 }

@@ -7,6 +7,7 @@ class ExpenseModel extends Expense{
     required super.amount,
     required super.category,
     required super.date,
+    required super.paymentMethod,
 });
 factory ExpenseModel.fromJson(Map<String,dynamic> json)
 {
@@ -16,7 +17,8 @@ factory ExpenseModel.fromJson(Map<String,dynamic> json)
       amount: (json['amount'] as num).toDouble(),
       category: json['category'],
       date: DateTime.parse(json['date']),
-  );
+    paymentMethod: json['paymentMethod'] ?? "Cash",);
+
 }
 Map<String,dynamic> toJson()
 {
@@ -27,4 +29,4 @@ Map<String,dynamic> toJson()
         'amount':amount,
         'category':category,
         'date':date.toIso8601String(),
-      };}}
+        'paymentMethod': paymentMethod,    };}}

@@ -5,6 +5,7 @@ class Expense
   final double amount;
   final String category;
   final DateTime date;
+  final String paymentMethod;
 
   Expense({
     required this.id,
@@ -12,12 +13,14 @@ class Expense
     required this.amount,
     required this.category,
     required this.date,
+    required this.paymentMethod,
 });
   Expense copyWith({
     String? title,
     double? amount,
     String? category,
     DateTime? date,
+    String? paymentMethod,
 })
   {
     return Expense(
@@ -26,6 +29,7 @@ class Expense
         amount: amount?? this.amount,
       category: category?? this.category,
       date: date?? this.date,
+      paymentMethod: paymentMethod??this.paymentMethod,
     );
   }
 }
