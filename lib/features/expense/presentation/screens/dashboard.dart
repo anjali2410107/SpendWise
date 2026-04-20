@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,11 +29,35 @@ class _DashboardScreenState extends State<DashboardScreen>
       LoadExpenses(widget.userId),
     );
   }
+  final Map<String,IconData> categoryIcons={
+    "Food": Icons.restaurant,
+    "Transport": Icons.directions_car,
+    "Retail": Icons.shopping_bag,
+    "Rent": Icons.home,
+    "Fun": Icons.sports_esports,
+    "Health": Icons.medical_services,
+    "Travel": Icons.flight,
+    "Other": Icons.more_horiz,
+  };
+  final Map<String, Color> categoryColors = {
+    "Food": Color(0xFF0A3D4D),
+    "Transport": Color(0xFF145C6A),
+    "Retail": Color(0xFF1C6E7D),
+    "Rent": Color(0xFF0F4C5C),
+    "Fun": Color(0xFF2C7A7B),
+    "Health": Color(0xFF3A8D91),
+    "Travel": Color(0xFF4DA1A9),
+    "Other": Colors.grey,
+  };
   Widget build(BuildContext context)
   {
     return Scaffold(
+      backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
         title: const Text("SpendWise"),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
 
       ),
       body: BlocBuilder<ExpenseBloc,ExpensesState>
@@ -43,13 +69,18 @@ class _DashboardScreenState extends State<DashboardScreen>
             return const Center(child: CircularProgressIndicator(),);
           }
         final expenses=state.filteredExpenses;
+        Map<String,double> categoryTotal={};
+        for(var e in expenses) {
+          categoryTotal[e.category]=(categoryTotal[e.category]??0)+e.amount;
+        }
+        
         return SingleChildScrollView(
           child: Column(
             children: [
               const SizedBox(height: 10,),
         _buildToggle(state),
               const SizedBox(height: 20,),
-              _buildDonutCard(expenses,state.monthlyTotals),
+              _buildDonutCard(expenses,categoryTotal),
               const  SizedBox(height: 20,),
               _buildCategorySection(expenses),
               const  SizedBox(height: 20,),
@@ -60,68 +91,68 @@ class _DashboardScreenState extends State<DashboardScreen>
         );
       }),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF0A3D4D),
         onPressed: () {
       context.push('/add');
       },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add,color: Colors.white,),
       ),
     );
   }
 
   Widget _buildRecentList(List<Expense> expenses)
   {
-    return ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: expenses.length,
-        itemBuilder: (context,index)
+    final recent=expenses.take(3).toList();
+    return Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+        const Text("Recent Transactions",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+      GestureDetector(
+        onTap: ()
         {
-        final expense=expenses[index];
-        return
-          Dismissible(key: Key(expense.id),
-            direction: DismissDirection.endToStart,
-              confirmDismiss: (direction) async
-              {print("Deleting ID from UI: ${expense.id}");
-              final shouldDelete=await showDialog(
-                  context: context,
-                  builder: (context)
-                  {
-                    return AlertDialog(
-
-                      title: const Text("Delete Expense"),
-                      content: const Text("Are you sure?"),
-                      actions: [
-                        TextButton(onPressed: ()  =>Navigator.pop(context,true),
-                            child: const Text("Delete"),
-                        ),
-
-                      ],
-                    );
-                  },
-              );
-            if(shouldDelete==true)
-{
-  context.read<ExpenseBloc>().add(
-DeleteExpense(expense.id,widget.userId),
-);
-}
-  return shouldDelete;
-            },
-            background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: const Icon(Icons.delete,color: Colors.white),
+          context.push('history');
+        },
+        child: const Text("View All",
+          style: TextStyle(color: Color(0xFF0A3D4D),
+              fontWeight: FontWeight.bold),),
+      ),],),
+        const SizedBox(height: 10,),
+        ...recent.map((expense)
+        {
+          final icon=categoryIcons[expense.category] ?? Icons.category;
+          final color=categoryColors[expense.category]?? Colors.grey;
+          return Container(
+            margin: const EdgeInsets.only(bottom:10),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
             ),
               child: ListTile(
-                onTap: (){
-                  context.push('/edit',extra:expense);
-                },
-        title:Text(expense.title),
-    subtitle:Text(expense.category),
-    trailing:Text("₹${expense.amount}"),
-    ),);
-    },
+               contentPadding:EdgeInsets.zero,
+                onTap: () =>
+                  context.push('/edit',extra:expense),
+
+                leading: CircleAvatar(
+                  backgroundColor: color.withOpacity(0.15),
+                  child: Icon(icon, color: color),
+                ),
+        title:Text(expense.title,
+          style: TextStyle(fontWeight: FontWeight.bold),),
+    subtitle:Text("${expense.category} • ${expense.date.day}/${expense.date.month}/${expense.date.year}"),
+    trailing:Text("₹${expense.amount}",style: TextStyle(
+      fontWeight: FontWeight.bold,color: Colors.red
+    ),
+    ),
+    ),
+          );
+    },)
+    ],
+    ),
     );
   }
   Widget _buildCategorySection(List<Expense> expenses)
@@ -132,8 +163,8 @@ DeleteExpense(expense.id,widget.userId),
         categoryTotal[e.category]=
             (categoryTotal[e.category]??0)+e.amount;
       }
-    return Container(
-      margin: const EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child:Column(
         crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,6 +174,8 @@ DeleteExpense(expense.id,widget.userId),
       const SizedBox(height: 10),
       ...categoryTotal.entries.map((entry)
     {
+      final icon = categoryIcons[entry.key] ?? Icons.category;
+      final color = categoryColors[entry.key] ?? Colors.grey;
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.all(14),
@@ -152,52 +185,24 @@ DeleteExpense(expense.id,widget.userId),
         ),
         child: Row(
           children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: BorderRadius.circular(10),
-              ),),
+            CircleAvatar(
+              backgroundColor: color.withOpacity(0.15),
+              child:  Icon(icon,color: color),
+            ),
             const SizedBox(width: 12),
             Expanded(child: Text(entry.key,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),),
-            Text("₹${entry.value.toStringAsFixed(2)}"),
-
+            Text("₹${entry.value.toStringAsFixed(2)}",
+              style: const TextStyle(color: Colors.red,fontWeight: FontWeight.bold),
+            ),
           ],
         ),
-
       );
-    }
-      )],
+    })
+      ],
     ),);
   }
-  Widget _buildTotalCard(List<Expense> expenses)
-  {
-    double total=0;
-    for(var e in expenses)
-      {
-        total+=e.amount;
-      }
-    return Card(
-      margin: const EdgeInsets.all(16),
-      child: Padding(padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          const Text("Total Expense"),
-          const SizedBox(height: 10,),
-          Text(
-            "₹${total.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 24,
-            fontWeight: FontWeight.bold),
-            ),
-        ],
-      ),
-      ),
-    );
-  }
-
  Widget _buildDonutCard(List<Expense> expenses,Map<String,double> data)
  {
    double total = expenses.fold(0, (sum, e) => sum + e.amount);
@@ -222,7 +227,7 @@ return Container(
     children: [
     SizedBox(
     height: 200,
-    child: MonthlyChart(data: data),
+    child: MonthlyChart(data: data,colors:categoryColors),
 
   ),
   Column(
@@ -246,7 +251,7 @@ return Container(
 Row(
   children: [
     Expanded(child: _statBox(
-"AVG. DAILY", "₹${avg.toStringAsFixed(2)}"),
+"AVG. DAILY", "₹${avg.toStringAsFixed(0)}"),
 ),
    const SizedBox(width: 10),
    Expanded(
@@ -293,7 +298,10 @@ Row(
           color: isSelected?Colors.white:Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(text),
+        child: Text(text,style: TextStyle(color: isSelected
+            ? const Color(0xFF0A3D4D)
+        : Colors.grey,
+        ),),
       ),
     );
   }

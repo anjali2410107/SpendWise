@@ -2,7 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 class MonthlyChart extends StatelessWidget{
   final Map<String,double> data;
-  const MonthlyChart({super.key,required this.data});
+  final Map<String, Color> colors;
+  const MonthlyChart({super.key,required this.data,required this.colors});
   @override
   Widget build(BuildContext context)
   {
@@ -21,6 +22,7 @@ class MonthlyChart extends StatelessWidget{
                 : (e.value / total) * 100;
             return PieChartSectionData(
               value: e.value,
+              color: colors[e.key.trim()] ?? Colors.grey,
               title: "${percentage.toStringAsFixed(1)}%",
               radius: 60,
               titleStyle: const TextStyle(

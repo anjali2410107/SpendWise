@@ -149,7 +149,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen>
               fontWeight: FontWeight.bold,
             ),
             decoration: const InputDecoration(
-              hintText: "0.00",
+              hintText: "₹${0.00}",
               border: InputBorder.none,
             ),
           ),),
