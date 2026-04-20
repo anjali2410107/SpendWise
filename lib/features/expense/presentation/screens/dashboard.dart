@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +9,7 @@ import 'package:spendwise/features/expense/presentation/bloc/expense_bloc.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_event.dart';
 import 'package:spendwise/features/expense/presentation/bloc/expense_state.dart';
 import 'package:spendwise/features/expense/presentation/widgets/monthly_chart.dart';
-
+git
 class DashboardScreen extends StatefulWidget {
   final String userId;
 
@@ -40,14 +39,14 @@ class _DashboardScreenState extends State<DashboardScreen>
     "Other": Icons.more_horiz,
   };
   final Map<String, Color> categoryColors = {
-    "Food": Color(0xFF0A3D4D),
-    "Transport": Color(0xFF145C6A),
-    "Retail": Color(0xFF1C6E7D),
-    "Rent": Color(0xFF0F4C5C),
-    "Fun": Color(0xFF2C7A7B),
-    "Health": Color(0xFF3A8D91),
-    "Travel": Color(0xFF4DA1A9),
-    "Other": Colors.grey,
+    "Food": const Color(0xFF0A3D4D),
+    "Transport": const Color(0xFF1D3557),
+    "Retail": const Color(0xFFB8860B),
+    "Rent": const Color(0xFF8B3A3A),
+    "Fun": const Color(0xFF4A148C),
+    "Health": const Color(0xFF006064),
+    "Travel": const Color(0xFF146339),
+    "Other": const Color(0xFF424242),
   };
   Widget build(BuildContext context)
   {
@@ -110,7 +109,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-        const Text("Recent Transactions",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+        const Text("Recent Transactions",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18, color: Color(0xFF0A3D4D)),),
       GestureDetector(
         onTap: ()
         {
@@ -138,14 +137,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                   context.push('/edit',extra:expense),
 
                 leading: CircleAvatar(
-                  backgroundColor: color.withOpacity(0.15),
-                  child: Icon(icon, color: color),
+                  backgroundColor: color,
+                  child: Icon(icon, color: Colors.white),
                 ),
         title:Text(expense.title,
           style: TextStyle(fontWeight: FontWeight.bold),),
     subtitle:Text("${expense.category} • ${expense.date.day}/${expense.date.month}/${expense.date.year}"),
-    trailing:Text("₹${expense.amount}",style: TextStyle(
-      fontWeight: FontWeight.bold,color: Colors.red
+    trailing:Text("₹${expense.amount.toStringAsFixed(0)}",style: const TextStyle(
+      fontWeight: FontWeight.bold,color: Color(0xFF7A2828), fontSize: 16
     ),
     ),
     ),
@@ -170,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       children: [
           const Text("Monthly Breakdown",
           style:
-          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0A3D4D))),
       const SizedBox(height: 10),
       ...categoryTotal.entries.map((entry)
     {
@@ -186,15 +185,15 @@ class _DashboardScreenState extends State<DashboardScreen>
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: color.withOpacity(0.15),
-              child:  Icon(icon,color: color),
+              backgroundColor: color,
+              child:  Icon(icon,color: Colors.white),
             ),
             const SizedBox(width: 12),
             Expanded(child: Text(entry.key,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),),
-            Text("₹${entry.value.toStringAsFixed(2)}",
-              style: const TextStyle(color: Colors.red,fontWeight: FontWeight.bold),
+            Text("₹${entry.value.toStringAsFixed(0)}",
+              style: const TextStyle(color: Color(0xFF7A2828),fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ],
         ),
@@ -235,13 +234,13 @@ return Container(
       const Text(
         "TOTAL SPENT",
         style: TextStyle(
-            fontSize: 12, letterSpacing: 1, color: Colors.grey),
+            fontSize: 12, letterSpacing: 1, color: Colors.grey, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 5),
       Text(
         "₹${total.toStringAsFixed(0)}",
         style: const TextStyle(
-            fontSize: 26, fontWeight: FontWeight.bold),
+            fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0A3D4D)),
       ),
     ],
   )
@@ -251,11 +250,11 @@ return Container(
 Row(
   children: [
     Expanded(child: _statBox(
-"AVG. DAILY", "₹${avg.toStringAsFixed(0)}"),
+"AVG. DAILY", "₹${avg.toStringAsFixed(0)}", false),
 ),
    const SizedBox(width: 10),
    Expanded(
-   child: _statBox("BUDGET LEFT", "₹1,180"),
+   child: _statBox("BUDGET LEFT", "₹1,180", true),
    ),],
 )
   ],
@@ -298,14 +297,14 @@ Row(
           color: isSelected?Colors.white:Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(text,style: TextStyle(color: isSelected
-            ? const Color(0xFF0A3D4D)
-        : Colors.grey,
+        child: Text(text,style: TextStyle(
+          color: isSelected ? const Color(0xFF0A3D4D) : Colors.grey,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
         ),),
       ),
     );
   }
-  Widget _statBox(String title, String value) {
+  Widget _statBox(String title, String value, bool isGreen) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -315,11 +314,11 @@ Row(
       child: Column(
         children: [
           Text(title,
-              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
           const SizedBox(height: 5),
           Text(value,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 16)),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 16, color: isGreen ? const Color(0xFF147A46) : const Color(0xFF0A3D4D))),
         ],
       ),
     );

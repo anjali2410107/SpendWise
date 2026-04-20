@@ -30,13 +30,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
   };
   final Map<String, Color> categoryColors = {
     "Food": const Color(0xFF0A3D4D),
-    "Transport": const Color(0xFF145C6A),
-    "Retail": const Color(0xFF1C6E7D),
-    "Rent": const Color(0xFF0F4C5C),
-    "Fun": const Color(0xFF2C7A7B),
-    "Health": const Color(0xFF3A8D91),
-    "Travel": const Color(0xFF4DA1A9),
-    "Other": Colors.grey,
+    "Transport": const Color(0xFF1D3557),
+    "Retail": const Color(0xFFB8860B),
+    "Rent": const Color(0xFF8B3A3A),
+    "Fun": const Color(0xFF4A148C),
+    "Health": const Color(0xFF006064),
+    "Travel": const Color(0xFF146339),
+    "Other": const Color(0xFF424242),
   };
 
   @override
@@ -88,12 +88,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          )
-        ],
       ),
       body: BlocBuilder<ExpenseBloc, ExpensesState>(
         builder: (context, state) {
@@ -241,10 +235,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 leading: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
+                                    color: color,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: Icon(icon, color: color),
+                                  child: Icon(icon, color: Colors.white),
                                 ),
                                 title: Text(
                                   expense.title,

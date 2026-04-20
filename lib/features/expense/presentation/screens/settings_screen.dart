@@ -144,7 +144,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         ),
         _tile(
           icon:Icons.fingerprint,
-          title:"Biometruc Login",
+          title:"Biometric Login",
           subtitle:"Enabled",
           trailing:Switch(value:
           biometric,

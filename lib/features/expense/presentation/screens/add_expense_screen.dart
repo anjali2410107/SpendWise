@@ -84,6 +84,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen>
       (
       AddExpense(expense, widget.userId),
     );
+    _titleController.clear();
+    _amountController.clear();
+    setState(() {
+      category="Food";
+      selectedDate = DateTime.now();
+      paymentMethod = "Cash";
+      selectedCard = "Visa"; });
     context.pop();
 
   }
