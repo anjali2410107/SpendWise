@@ -11,6 +11,9 @@ class MainShell extends StatelessWidget{
       body: child,
       bottomNavigationBar:
       BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: const Color(0xFF0A3D4D),
+          unselectedItemColor: Colors.grey,
           currentIndex: _getIndex(context),
           onTap: (index)
       {
@@ -19,10 +22,13 @@ class MainShell extends StatelessWidget{
           case 0:
       context.go('/dashboard');
       break;
-          case 1:
+      case 1:
       context.go('/add');
       break;
           case 2:
+            context.go('/history');
+            break;
+            case 3:
             context.go('/settings');
             break;
             }
@@ -34,7 +40,9 @@ class MainShell extends StatelessWidget{
         BottomNavigationBarItem(icon:Icon (Icons.add),
           label: "Add",
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.settings),
+        BottomNavigationBarItem(icon:Icon (Icons.history),
+          label: "History",
+        ), BottomNavigationBarItem(icon: Icon(Icons.settings),
         label: 'Settings',
         ),
       ],
@@ -45,7 +53,8 @@ class MainShell extends StatelessWidget{
    final location=GoRouterState.of(context).uri.toString();
    if(location.startsWith('/dashboard')) return 0;
    if(location.startsWith('/add')) return 1;
-   if(location.startsWith('/settings')) return 2;
+   if(location.startsWith('/history')) return 2;
+   if(location.startsWith('/settings')) return 3;
      return 0;
 
   }

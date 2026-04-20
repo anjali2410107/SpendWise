@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:spendwise/features/expense/presentation/screens/add_expense_screen.dart';
 import 'package:spendwise/features/expense/presentation/screens/dashboard.dart';
 import 'package:spendwise/features/expense/presentation/screens/edit_expense_screen.dart';
+import 'package:spendwise/features/expense/presentation/screens/history_screen.dart';
 import 'package:spendwise/features/expense/presentation/screens/splash_screen.dart';
 import 'package:spendwise/main_shell.dart';
 
@@ -38,6 +39,10 @@ AddExpenseScreen(userId: userId),
         final expense=state.extra as Expense;
         return EditExpenseScreen(expense: expense, userId: userId);
       }
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => HistoryScreen(userId: userId),
       ),
       GoRoute(
         path: '/settings',

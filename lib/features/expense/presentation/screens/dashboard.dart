@@ -114,7 +114,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       GestureDetector(
         onTap: ()
         {
-          context.push('history');
+          context.push('/history');
         },
         child: const Text("View All",
           style: TextStyle(color: Color(0xFF0A3D4D),

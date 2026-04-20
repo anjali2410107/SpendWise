@@ -11,8 +11,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent,ExpensesState>
 {
   final ExpenseRepository repository;
   StreamSubscription? _subscription;
-  String? selectedCategory;
-  TimeFilter selectedFilter = TimeFilter.monthly;
+  
   ExpenseBloc(this.repository):super(ExpensesState())
   {
     on<LoadExpenses>((event,emit) async
@@ -28,12 +27,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent,ExpensesState>
     });
     on<_ExpensesUpdated>((event,emit)
     { final allExpenses=event.expenses;
-      final timeFiltered=_filterExpenses(allExpenses,selectedFilter);
-      final finalFiltered=selectedCategory==null
-    ? timeFiltered
-      : timeFiltered
-    .where((e) =>e.category ==selectedCategory)
-    .toList();
+      final timeFiltered=_filterExpenses(allExpenses,state.selectedFilter);
+     final finalFiltered = timeFiltered;
+      
       final monthlyTotals=_getMonthlyTotals(allExpenses);
       emit(state.copyWith(
         expenses: allExpenses,
@@ -55,7 +51,6 @@ class ExpenseBloc extends Bloc<ExpenseEvent,ExpensesState>
       await repository.updateExpense(event.expense, event.userId);
     });
     on<FilterByCategory>((event,emit) {
-      selectedCategory=event.category;
       final filtered = state.expenses
           .where((e) => e.category == event.category)
           .toList();
